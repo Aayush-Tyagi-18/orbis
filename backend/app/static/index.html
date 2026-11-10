@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbis</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='32' rx='27' ry='10' fill='none' stroke='%234DA3FF' stroke-width='4' transform='rotate(-28 32 32)'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23B197FF'/%3E%3Ccircle cx='54' cy='24' r='4' fill='%233DDC97'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1525; --surface:#1A2236; --surface2:#232C44; --line:#323B55; --ink:#F5F9FC; --muted:#A3ABC2;
+  --sky:#4DA3FF; --mint:#3DDC97; --sun:#FFC857; --grape:#B197FF; --coral:#FF7A85;
+  --on-accent:#0E1525; --glow:rgba(177,151,255,.16);
+  --display:"Sora","Trebuchet MS",system-ui,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:light){
+  :root{--bg:#F3F5FC; --surface:#FFFFFF; --surface2:#EBEFFA; --line:#D6DDEE; --ink:#141B2D; --muted:#566180;
+    --sky:#1D6FE0; --mint:#0C8A5B; --sun:#A86A00; --grape:#6B4BD8; --coral:#CC3846; --on-accent:#FFFFFF; --glow:rgba(107,75,216,.10);}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 420px at 12% -6%,var(--glow),transparent 70%),radial-gradient(700px 380px at 96% 8%,rgba(77,163,255,.10),transparent 70%);
+  background-repeat:no-repeat;min-height:100vh}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sky);outline-offset:3px;border-radius:8px}
+
+/* ---------- header ---------- */
+.top{display:flex;align-items:center;gap:16px;padding:14px 28px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}
+.brand h1{font-size:30px;font-weight:700}
+.brand p{margin:0;color:var(--muted);font-size:14px}
+.brand h1 a{color:inherit;text-decoration:none}
+.brand h1 a:hover{text-decoration:underline;text-decoration-color:var(--grape);text-underline-offset:6px}
+.spacer{flex:1}
+.btn{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 16px;cursor:pointer;font-weight:500;transition:transform .12s,border-color .12s}
+.btn:hover{border-color:var(--sky);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{border:0;color:var(--on-accent);font-weight:600;background:linear-gradient(120deg,var(--sky),var(--grape))}
+.btn.big{padding:13px 22px;font-size:16px;border-radius:14px}
+.btn.quiet{border-color:transparent;background:none;color:var(--muted);padding:5px 10px}
+.btn[disabled]{opacity:.6;cursor:progress}
+
+/* ---------- logo ---------- */
+.logo{display:inline-block;cursor:pointer;user-select:none;touch-action:manipulation;will-change:transform;transition:transform .12s ease-out;border-radius:50%}
+.logo svg{display:block;overflow:visible}
+body.hyper .logo svg{animation:hue 1.4s linear infinite}
+@keyframes hue{to{filter:hue-rotate(360deg) saturate(1.4)}}
+body.hyper .top{box-shadow:0 0 60px -10px var(--grape)}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:310px minmax(0,1fr) 380px;gap:18px;padding:8px 28px 28px;align-items:start}
+.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:20px;min-width:0}
+.panel>h2{font-size:19px;margin-bottom:14px}
+.panel.source{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow:auto}
+
+/* ---------- deadlines ---------- */
+.dl{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.dl button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 14px;border-radius:14px;background:var(--surface2);cursor:pointer;border:1.5px solid transparent;transition:border-color .12s,transform .12s}
+.dl button:hover{border-color:var(--sky);transform:translateX(2px)}
+.dl button:focus-visible{outline:3px solid var(--sky)}
+.dl .active button{border-color:var(--grape)}
+.dl .date{font-weight:600}
+.dl .what{grid-column:1/-1;color:var(--muted);font-size:13.5px}
+.pill{font-size:12.5px;font-weight:600;border-radius:999px;padding:2px 10px;background:color-mix(in srgb,var(--sky) 18%,transparent);color:var(--sky);align-self:start;white-space:nowrap}
+.pill.soon{background:color-mix(in srgb,var(--sun) 20%,transparent);color:var(--sun)}
+.pill.past{background:var(--line);color:var(--muted)}
+.pill.ok{background:color-mix(in srgb,var(--mint) 18%,transparent);color:var(--mint)}
+.pill.warn{background:color-mix(in srgb,var(--sun) 20%,transparent);color:var(--sun)}
+
+/* ---------- checklist ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.tab{border:1.5px solid var(--line);background:var(--surface2);border-radius:999px;padding:6px 14px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.tab i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.tab[aria-selected=true]{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,var(--surface2));font-weight:600}
+.bar{display:flex;height:14px;border-radius:999px;overflow:hidden;background:var(--surface2);margin:4px 0 8px}
+.bar span{display:block;width:0;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:13.5px;margin-bottom:6px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.group{margin-top:22px}
+.group h3{font-size:16px}
+.group .intro{margin:2px 0 10px;color:var(--muted);font-size:13.5px}
+.rows{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.row{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:1fr auto;gap:3px 14px;padding:12px 14px;border-radius:14px;background:var(--surface2);border-left:5px solid var(--c);cursor:pointer;transition:transform .12s,background .12s}
+.row:hover{transform:translateX(3px)}
+.row:focus-visible{outline:3px solid var(--sky)}
+.row.active{background:color-mix(in srgb,var(--c) 14%,var(--surface2))}
+.row .desc{font-weight:500}
+.row .meta{color:var(--muted);font-size:13px}
+.row .note{grid-column:1/-1;font-size:13px;color:var(--c)}
+
+/* ---------- hero (empty state) ---------- */
+.hero{text-align:center;padding:30px 10px 18px;display:grid;justify-items:center;gap:14px}
+.hero h2{font-size:34px;line-height:1.1;max-width:15ch}
+.hero p{margin:0;color:var(--muted);max-width:46ch}
+.hero .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.hero small{color:var(--muted)}
+
+/* ---------- documents + forms ---------- */
+.docs{margin-top:20px}
+.docs h2{font-size:19px;margin-bottom:12px}
+.doc{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:12px;background:var(--surface2);margin-bottom:8px;flex-wrap:wrap}
+.doc .name{flex:1;overflow-wrap:anywhere;font-weight:500}
+form.inline{display:grid;grid-template-columns:1fr 170px 150px auto;gap:8px;margin-top:12px}
+@media(max-width:760px){form.inline{grid-template-columns:1fr}}
+input,select,textarea{border:1.5px solid var(--line);background:var(--surface2);border-radius:12px;padding:9px 12px;width:100%}
+textarea{min-height:110px;resize:vertical}
+dialog{border:1.5px solid var(--line);border-radius:22px;background:var(--surface);color:var(--ink);width:min(560px,92vw);padding:24px}
+dialog::backdrop{background:rgba(6,9,18,.62);backdrop-filter:blur(3px)}
+dialog h2{margin-bottom:6px}
+dialog label{display:block;margin:12px 0 4px;font-weight:500}
+dialog .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+/* ---------- source ---------- */
+.source .head{color:var(--muted);font-size:13.5px;margin:0 0 10px}
+.source a{color:var(--sky)}
+.page{border:1.5px solid var(--line);border-radius:14px;background:var(--surface2);padding:14px 16px;margin-bottom:12px;white-space:pre-wrap;font-size:14.5px;line-height:1.65}
+.page .pn{display:block;font-family:var(--display);font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.page.cited{border-color:var(--grape)}
+mark{background:#FFD966;color:#1B1400;padding:1px 3px;border-radius:5px}
+.hint{border:2px dashed var(--line);border-radius:14px;padding:18px;color:var(--muted)}
+
+/* ---------- footer, toast, confetti ---------- */
+.foot{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:6px 28px 28px;color:var(--muted);font-size:13.5px}
+.tip{display:flex;gap:10px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:6px 8px 6px 16px}
+.tip b{color:var(--ink);font-weight:600}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:14px;max-width:90vw;font-weight:500;z-index:30}
+.toast[hidden]{display:none}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
+
+@media(max-width:1150px){
+  .shell{grid-template-columns:1fr}
+  .panel.source{position:static;max-height:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div id="logo-slot"></div>
+    <div>
+      <h1><a href="/" aria-label="Orbis home page">Orbis</a></h1>
+      <p>Your world, intelligently organized.</p>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <button class="btn" id="seed" type="button">Try sample programs</button>
+  <button class="btn primary" id="add-program" type="button">Add a program</button>
+</header>
+
+<main class="shell">
+  <section class="panel" aria-labelledby="t-h">
+    <h2 id="t-h">Coming up</h2>
+    <ol class="dl" id="timeline"></ol>
+    <p class="hint" id="timeline-empty" hidden>Deadlines show up here, nearest first.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="c-h">
+    <h2 id="c-h" hidden>Checklist</h2>
+    <div class="tabs" id="tabs" role="tablist" aria-label="Programs"></div>
+    <div id="checklist"></div>
+
+    <div class="docs">
+      <h2>Your documents</h2>
+      <div id="docs"></div>
+      <form class="inline" id="doc-form">
+        <input name="filename" placeholder="File name, like transcript_final.pdf" aria-label="File name" required>
+        <select name="doc_type" aria-label="Document type">
+          <option value="">Guess from the name</option>
+          <option value="transcript">Transcript</option>
+          <option value="cv">Resume or CV</option>
+          <option value="sop">Statement of purpose</option>
+          <option value="lor">Recommendation letter</option>
+          <option value="score_report">Test scores (GRE, GMAT)</option>
+          <option value="english_test">English test (IELTS, TOEFL)</option>
+          <option value="passport">Passport</option>
+          <option value="portfolio">Portfolio</option>
+        </select>
+        <input name="expiry" type="date" aria-label="Expiry date, optional" title="Expiry date, if it has one">
+        <button class="btn primary" type="submit">Add</button>
+      </form>
+    </div>
+  </section>
+
+  <aside class="panel source" aria-labelledby="s-h">
+    <h2 id="s-h">Where it came from</h2>
+    <div id="source"><p class="hint">Pick anything on your checklist or timeline and the exact passage lights up here.</p></div>
+  </aside>
+</main>
+
+<footer class="foot">
+  <div class="tip"><span id="tip-text"></span><button class="btn quiet" id="tip-next" type="button">Another tip</button></div>
+  <span>Orbis organizes and cites. The official page always has the final word.</span>
+  <button class="btn quiet" id="wipe" type="button">Delete all my data</button>
+</footer>
+
+<dialog id="program-dialog">
+  <form id="program-form" method="dialog">
+    <h2>Add a program</h2>
+    <p style="margin:0;color:var(--muted)">Give Orbis one place to read the requirements from.</p>
+    <label for="p-name">Program name</label>
+    <input id="p-name" name="name" required placeholder="Northfield University, MS Computer Science">
+    <label for="p-url">Link to the requirements page or PDF</label>
+    <input id="p-url" name="url" type="url" placeholder="https://">
+    <label for="p-text">Or paste the requirements</label>
+    <textarea id="p-text" name="text"></textarea>
+    <label for="p-file">Or upload a PDF or text file</label>
+    <input id="p-file" name="file" type="file" accept=".pdf,.txt">
+    <div class="actions">
+      <button class="btn" type="button" id="p-cancel">Cancel</button>
+      <button class="btn primary" type="submit" id="p-submit">Read requirements</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const state = { programs: [], selected: null, tasks: [], counts: {}, timeline: [], docs: [], activeTask: null, sources: {}, celebrated: new Set() };
+
+const STATE_META = {
+  missing:      { label: "Still needed",   color: "var(--sun)",   intro: "Nothing in your documents covers these yet." },
+  expired:      { label: "Out of date",    color: "var(--coral)", intro: "These documents have expired." },
+  needs_review: { label: "Take a look",    color: "var(--grape)", intro: "Orbis could not settle these on its own." },
+  satisfied:    { label: "Covered",        color: "var(--mint)",  intro: "You already have a document for these." },
+};
+const ORDER = ["missing", "expired", "needs_review", "satisfied"];
+const PROGRAM_COLORS = ["var(--sky)", "var(--mint)", "var(--sun)", "var(--grape)", "var(--coral)"];
+
+const TIPS = [
+  "Ask your referees at least three weeks ahead. People write better letters when they have time.",
+  "Order official transcripts early. Registrar offices tend to get slow near deadline season.",
+  "Save a PDF of every requirements page. Programs can change them without warning.",
+  "A deadline usually has a time and a timezone. Check both.",
+  "See an \u201cunless\u201d in a requirement? It may not apply to you. Orbis flags those so you can decide.",
+  "Name files plainly, like lastname_transcript.pdf, and Orbis can guess what they are.",
+  "Add an expiry date to test scores and Orbis will warn you if they lapse.",
+  "Look for orbits: the little moons on the logo follow your cursor. Click it a few times.",
+];
+let tipIndex = Math.floor(Math.random() * TIPS.length);
+function showTip(next) { if (next) tipIndex = (tipIndex + 1) % TIPS.length; $("#tip-text").replaceChildren(el("b", {}, "Tip: "), TIPS[tipIndex]); }
+
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") n.className = v;
+    else if (k === "style") n.style.cssText = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) n.append(k.nodeType ? k : document.createTextNode(k));
+  return n;
+}
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._t); toast._t = setTimeout(() => (t.hidden = true), 4500);
+}
+async function api(path, opts = {}) {
+  const res = await fetch("/api" + path, opts);
+  if (!res.ok) {
+    let detail = res.statusText;
+    try { detail = (await res.json()).detail || detail; } catch {}
+    throw new Error(typeof detail === "string" ? detail : "Something went wrong.");
+  }
+  return res.json();
+}
+const json = (method, body) => ({ method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+const fmtDate = (iso) => new Date(iso + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+
+/* =====================================================================
+   The Orbis logo: a glowing core, three tilted orbits and three moons.
+   It leans toward your cursor, speeds up on hover, pulses on click,
+   and goes into hyperdrive if you click it five times quickly.
+   ===================================================================== */
+const logos = new Set();
+let logoSeq = 0, clickTimes = [], hyperTimer = null;
+
+function createLogo(size) {
+  const id = ++logoSeq;
+  const wrap = el("div", { class: "logo", role: "button", tabindex: "0", "aria-label": "Orbis logo. Press for a surprise." });
+  wrap.style.width = wrap.style.height = size + "px";
+  wrap.innerHTML = `
+  <svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true">
+    <defs>
+      <radialGradient id="core${id}" cx="35%" cy="30%" r="75%">
+        <stop offset="0" stop-color="#fff" stop-opacity=".95"/>
+        <stop offset=".32" style="stop-color:var(--sky)"/>
+        <stop offset="1" style="stop-color:var(--grape)"/>
+      </radialGradient>
+      <linearGradient id="ring${id}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" style="stop-color:var(--sky)"/><stop offset="1" style="stop-color:var(--mint)"/>
+      </linearGradient>
+      <filter id="glow${id}" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <g fill="none" stroke="url(#ring${id})" stroke-width="1.8" opacity=".85">
+      <ellipse cx="60" cy="60" rx="50" ry="18" transform="rotate(-28 60 60)"/>
+      <ellipse cx="60" cy="60" rx="50" ry="18" transform="rotate(32 60 60)" opacity=".7"/>
+      <ellipse cx="60" cy="60" rx="50" ry="18" transform="rotate(92 60 60)" opacity=".55"/>
+    </g>
+    <g class="back"></g>
+    <circle class="core" cx="60" cy="60" r="15" fill="url(#core${id})" filter="url(#glow${id})"/>
+    <g class="front"></g>
+  </svg>`;
+  const svg = wrap.firstElementChild, back = svg.querySelector(".back"), front = svg.querySelector(".front"), core = svg.querySelector(".core");
+  const colors = ["var(--mint)", "var(--sun)", "var(--coral)"];
+  const NS = "http://www.w3.org/2000/svg";
+  const moons = colors.map((c, i) => {
+    const m = document.createElementNS(NS, "circle");
+    m.setAttribute("r", "4.5"); m.style.fill = c; m.style.filter = "drop-shadow(0 0 3px " + c + ")";
+    front.append(m);
+    return { node: m, rot: [-28, 32, 92][i] * Math.PI / 180, a: i * 2.1, speed: [0.9, -0.62, 1.25][i] };
+  });
+  const L = { wrap, core, moons, front, back, hover: false, boost: 1, pulse: 0, tx: 0, ty: 0, rx: 0, ry: 0, size };
+
+  wrap.addEventListener("pointerenter", () => (L.hover = true));
+  wrap.addEventListener("pointerleave", () => (L.hover = false));
+  const poke = () => {
+    L.boost = 7; L.pulse = 1;
+    const now = performance.now(); clickTimes = clickTimes.filter(t => now - t < 2500); clickTimes.push(now);
+    if (clickTimes.length >= 5) { clickTimes = []; hyperdrive(); }
+  };
+  wrap.addEventListener("click", poke);
+  wrap.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); poke(); } });
+  logos.add(L);
+  draw(L);
+  return wrap;
+}
+
+function draw(L) {
+  for (const m of L.moons) {
+    const x = 50 * Math.cos(m.a), y = 18 * Math.sin(m.a), depth = Math.sin(m.a);
+    const X = x * Math.cos(m.rot) - y * Math.sin(m.rot), Y = x * Math.sin(m.rot) + y * Math.cos(m.rot);
+    m.node.setAttribute("cx", (60 + X).toFixed(2)); m.node.setAttribute("cy", (60 + Y).toFixed(2));
+    m.node.setAttribute("r", (4.6 + depth * 1.3).toFixed(2));
+    const target = depth > 0 ? L.front : L.back;
+    if (m.node.parentNode !== target) target.append(m.node);
+  }
+  L.core.setAttribute("r", (15 + L.pulse * 5).toFixed(2));
+}
+
+let last = performance.now();
+function tick(now) {
+  const dt = Math.min((now - last) / 1000, 0.05); last = now;
+  for (const L of logos) {
+    const goal = L.hover ? 2.6 : 1;
+    L.boost += (goal - L.boost) * Math.min(dt * 2.2, 1);
+    L.pulse *= Math.pow(0.02, dt);
+    for (const m of L.moons) m.a += m.speed * L.boost * dt;
+    L.rx += (L.tx - L.rx) * Math.min(dt * 9, 1); L.ry += (L.ty - L.ry) * Math.min(dt * 9, 1);
+    L.wrap.style.transform = `perspective(420px) rotateX(${L.rx.toFixed(2)}deg) rotateY(${L.ry.toFixed(2)}deg)`;
+    draw(L);
+  }
+  requestAnimationFrame(tick);
+}
+if (!REDUCED) {
+  requestAnimationFrame(tick);
+  addEventListener("pointermove", (e) => {
+    for (const L of logos) {
+      const r = L.wrap.getBoundingClientRect();
+      const dx = (e.clientX - (r.left + r.width / 2)) / 260, dy = (e.clientY - (r.top + r.height / 2)) / 260;
+      L.ty = Math.max(-1, Math.min(1, dx)) * 24; L.tx = -Math.max(-1, Math.min(1, dy)) * 24;
+    }
+  }, { passive: true });
+}
+
+function hyperdrive() {
+  document.body.classList.add("hyper");
+  for (const L of logos) { L.boost = 14; L.pulse = 1; }
+  toast("Hyperdrive engaged. Welcome to orbit.");
+  burst(innerWidth / 2, 120, 120);
+  clearTimeout(hyperTimer); hyperTimer = setTimeout(() => document.body.classList.remove("hyper"), 7000);
+}
+// Konami code easter egg
+const KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"]; let kpos = 0;
+addEventListener("keydown", (e) => {
+  if (e.target.matches("input,textarea,select")) return;
+  kpos = e.key === KONAMI[kpos] ? kpos + 1 : (e.key === KONAMI[0] ? 1 : 0);
+  if (kpos === KONAMI.length) { kpos = 0; hyperdrive(); }
+});
+
+/* ---------- confetti ---------- */
+const cv = $("#confetti"), ctx = cv.getContext("2d"); let bits = [], raf = 0;
+function sizeCanvas() { cv.width = innerWidth; cv.height = innerHeight; } sizeCanvas(); addEventListener("resize", sizeCanvas);
+function burst(x, y, n = 90) {
+  if (REDUCED) return;
+  const pal = ["#4DA3FF", "#3DDC97", "#FFC857", "#B197FF", "#FF7A85"];
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, s = 3 + Math.random() * 7;
+    bits.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 4, r: 3 + Math.random() * 4, c: pal[i % pal.length], life: 1 });
+  }
+  if (!raf) raf = requestAnimationFrame(stepBits);
+}
+function stepBits() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  bits = bits.filter(b => b.life > 0);
+  for (const b of bits) {
+    b.x += b.vx; b.y += b.vy; b.vy += 0.22; b.vx *= 0.99; b.life -= 0.013;
+    ctx.globalAlpha = Math.max(b.life, 0); ctx.fillStyle = b.c;
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 7); ctx.fill();
+  }
+  raf = bits.length ? requestAnimationFrame(stepBits) : 0;
+  if (!bits.length) ctx.clearRect(0, 0, cv.width, cv.height);
+}
+
+/* ---------- data ---------- */
+async function refresh() {
+  [state.programs, state.timeline, state.docs] = await Promise.all([api("/programs"), api("/timeline"), api("/documents")]);
+  if (!state.programs.find(p => p.id === state.selected)) state.selected = state.programs[0]?.id ?? null;
+  if (state.selected) { const c = await api("/checklist/" + state.selected); state.tasks = c.tasks; state.counts = c.counts; }
+  else { state.tasks = []; state.counts = {}; }
+  render();
+  maybeCelebrate();
+}
+function maybeCelebrate() {
+  const total = state.tasks.length, done = state.counts.satisfied || 0;
+  if (total && done === total && !state.celebrated.has(state.selected)) {
+    state.celebrated.add(state.selected);
+    burst(innerWidth / 2, innerHeight / 3, 140);
+    toast("Everything for this program is covered. Nice work.");
+  }
+}
+
+/* ---------- rendering ---------- */
+function renderTimeline() {
+  const ol = $("#timeline"); ol.replaceChildren();
+  $("#timeline-empty").hidden = state.timeline.length > 0;
+  for (const d of state.timeline) {
+    const cls = d.days_left < 0 ? "past" : d.days_left <= 21 ? "soon" : "";
+    const left = d.days_left < 0 ? "passed" : d.days_left === 0 ? "today" : d.days_left === 1 ? "tomorrow" : d.days_left + " days";
+    ol.append(el("li", { class: d.program_id === state.selected ? "active" : "" },
+      el("button", { type: "button", onclick: () => selectProgram(d.program_id, d) },
+        el("span", { class: "date" }, fmtDate(d.due) + (d.time_note ? ", " + d.time_note : "")),
+        el("span", { class: "pill " + cls }, left),
+        el("span", { class: "what" }, `${d.program_name}: ${d.label}`))));
+  }
+}
+function renderTabs() {
+  const t = $("#tabs"); t.replaceChildren();
+  state.programs.forEach((p, i) => t.append(el("button", { class: "tab", role: "tab", style: "--c:" + PROGRAM_COLORS[i % PROGRAM_COLORS.length], "aria-selected": String(p.id === state.selected), onclick: () => selectProgram(p.id) }, el("i"), p.name)));
+}
+function renderChecklist() {
+  const box = $("#checklist"); box.replaceChildren();
+  if (!state.selected) {
+    const hero = el("div", { class: "hero" });
+    hero.append(createLogo(170),
+      el("h2", {}, "Paperwork, pulled into orbit."),
+      el("p", {}, "Give Orbis a requirements page and it lists what a program asks for, when it is due, and the exact line it read it from."),
+      el("div", { class: "actions" },
+        el("button", { class: "btn primary big", type: "button", onclick: () => $("#program-dialog").showModal() }, "Add a program"),
+        el("button", { class: "btn big", type: "button", onclick: () => $("#seed").click() }, "Try sample programs")),
+      el("small", {}, "Tip: the logo is clickable."));
+    box.append(hero); return;
+  }
+  const total = state.tasks.length || 1;
+  const bar = el("div", { class: "bar", role: "img", "aria-label": "Checklist progress" });
+  const legend = el("div", { class: "legend" });
+  const fills = [];
+  for (const s of ORDER) {
+    const n = state.counts[s] || 0; if (!n) continue;
+    const seg = el("span", { style: `background:${STATE_META[s].color}` }); bar.append(seg); fills.push([seg, (n / total) * 100]);
+    legend.append(el("span", {}, el("i", { class: "dot", style: `background:${STATE_META[s].color}` }), `${STATE_META[s].label} ${n}`));
+  }
+  box.append(bar, legend);
+  requestAnimationFrame(() => requestAnimationFrame(() => fills.forEach(([seg, w]) => (seg.style.width = w + "%"))));
+
+  for (const s of ORDER) {
+    const items = state.tasks.filter(t => t.state === s); if (!items.length) continue;
+    const g = el("div", { class: "group" }, el("h3", {}, `${STATE_META[s].label} (${items.length})`), el("p", { class: "intro" }, STATE_META[s].intro));
+    const ul = el("ul", { class: "rows" });
+    for (const t of items) {
+      const covered = t.matched_document_id ? ", covered by " + (state.docs.find(d => d.id === t.matched_document_id)?.filename ?? "your document") : "";
+      ul.append(el("li", {}, el("button", { class: "row" + (state.activeTask === t.requirement_id ? " active" : ""), style: "--c:" + STATE_META[s].color, type: "button", onclick: () => openSource(t) },
+        el("span", { class: "desc" }, t.description),
+        el("span", { class: "pill " + (t.verified ? "ok" : "warn") }, t.verified ? `Verified, p.${t.citation?.page ?? 1}` : "Not verified"),
+        el("span", { class: "meta" }, (t.mandatory ? "Required" : "Optional") + covered),
+        t.note ? el("span", { class: "note" }, t.note) : null)));
+    }
+    g.append(ul); box.append(g);
+  }
+}
+function renderDocs() {
+  const box = $("#docs"); box.replaceChildren();
+  if (!state.docs.length) { box.append(el("p", { style: "color:var(--muted);margin:0 0 4px" }, "Nothing here yet. Add what you already have and Orbis ticks off the matching items.")); return; }
+  for (const d of state.docs) {
+    box.append(el("div", { class: "doc" },
+      el("span", { class: "name" }, d.filename),
+      el("span", { class: "pill" }, d.doc_type.replace("_", " ")),
+      d.expiry ? el("span", { class: "pill soon" }, "expires " + fmtDate(d.expiry)) : null,
+      el("button", { class: "btn quiet", type: "button", "aria-label": "Remove " + d.filename, onclick: async () => { await api("/documents/" + d.id, { method: "DELETE" }); refresh(); } }, "Remove")));
+  }
+}
+function render() {
+  // keep the hero logo alive across re-renders; drop logos whose nodes left the page
+  for (const L of [...logos]) if (!L.wrap.isConnected && L.size !== 52) logos.delete(L);
+  renderTimeline(); renderTabs(); renderChecklist(); renderDocs();
+}
+
+/* ---------- source panel ---------- */
+function highlight(container, text, quote) {
+  const words = (quote.match(/[\p{L}\p{N}]+/gu) || []).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  if (!words.length) { container.append(text); return; }
+  const m = new RegExp(words.join("[^\\p{L}\\p{N}]+"), "iu").exec(text);
+  if (!m) { container.append(text); return; }
+  container.append(text.slice(0, m.index), el("mark", {}, m[0]), text.slice(m.index + m[0].length));
+}
+async function openSource(task) { state.activeTask = task.requirement_id; renderChecklist(); await showCitation(task.citation); }
+async function showCitation(c) {
+  const box = $("#source"); box.replaceChildren();
+  if (!c) { box.append(el("p", { class: "hint" }, "No source passage was recorded for this one.")); return; }
+  let src = state.sources[c.source_id];
+  if (!src) { src = await api("/sources/" + c.source_id); state.sources[c.source_id] = src; }
+  box.append(el("p", { class: "head" }, `${src.name}, read on ${fmtDate(src.fetched_at.slice(0, 10))}. Confirm on the official site before you act.`));
+  if (src.url) box.append(el("p", { class: "head" }, el("a", { href: src.url, target: "_blank", rel: "noopener noreferrer" }, "Open the original page")));
+  let first = null;
+  src.pages.forEach((text, i) => {
+    const cited = i + 1 === c.page;
+    const page = el("div", { class: "page" + (cited ? " cited" : "") }, el("span", { class: "pn" }, `Page ${i + 1}`));
+    if (cited) { highlight(page, text, c.quote); first = page; } else page.append(text);
+    box.append(page);
+  });
+  first?.querySelector("mark")?.scrollIntoView({ block: "center", behavior: REDUCED ? "auto" : "smooth" });
+}
+async function selectProgram(id, deadline) {
+  state.selected = id; state.activeTask = null;
+  const c = await api("/checklist/" + id); state.tasks = c.tasks; state.counts = c.counts;
+  render(); maybeCelebrate();
+  if (deadline?.citation) showCitation(deadline.citation);
+}
+
+/* ---------- actions ---------- */
+$("#seed").onclick = async () => { try { await api("/demo/seed", { method: "POST" }); await refresh(); toast("Sample programs loaded. The universities are fictional."); } catch (e) { toast(e.message); } };
+$("#add-program").onclick = () => $("#program-dialog").showModal();
+$("#p-cancel").onclick = () => $("#program-dialog").close();
+$("#program-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target), btn = $("#p-submit"); btn.disabled = true; btn.textContent = "Reading\u2026";
+  try {
+    const file = f.get("file"); let res;
+    if (file && file.size) { const fd = new FormData(); fd.append("name", f.get("name")); fd.append("file", file); res = await api("/programs/upload", { method: "POST", body: fd }); }
+    else res = await api("/programs", json("POST", { name: f.get("name"), url: f.get("url") || null, text: f.get("text") || null }));
+    state.selected = res.program.id; $("#program-dialog").close(); e.target.reset(); await refresh();
+    const s = res.stats; toast(`Found ${s.requirements} requirements and ${s.deadlines} deadlines. ${s.unverified} could not be verified.`);
+  } catch (err) { toast(err.message); }
+  finally { btn.disabled = false; btn.textContent = "Read requirements"; }
+};
+$("#doc-form").onsubmit = async (e) => {
+  e.preventDefault(); const f = new FormData(e.target);
+  try { await api("/documents", json("POST", { filename: f.get("filename"), doc_type: f.get("doc_type") || null, expiry: f.get("expiry") || null })); e.target.reset(); await refresh(); }
+  catch (err) { toast(err.message); }
+};
+$("#wipe").onclick = async () => {
+  if (!confirm("Delete every program, deadline and document Orbis holds for you? This cannot be undone.")) return;
+  await api("/me", { method: "DELETE" }); state.sources = {}; state.selected = null; state.celebrated.clear(); await refresh(); toast("All data deleted.");
+};
+$("#tip-next").onclick = () => showTip(true);
+
+$("#logo-slot").append(createLogo(52));
+showTip(false);
+refresh().catch(e => toast(e.message));
+</script>
+</body>
+</html>

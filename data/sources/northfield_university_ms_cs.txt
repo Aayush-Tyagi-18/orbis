@@ -1,0 +1,24 @@
+Northfield University - MS in Computer Science (sample data, fictional)
+
+Admissions overview
+The Master of Science in Computer Science admits students for the Fall term only.
+
+Key dates
+- Round 1 application deadline: January 5, 2027, 11:59 PM EST
+- Round 2 application deadline: March 1, 2027
+- Financial aid priority date: January 15, 2027
+Decisions are released in rolling batches after each round.
+
+Required application materials
+- Official transcripts from every university attended
+- Updated resume or CV
+- Statement of purpose (maximum 2 pages)
+- Three letters of recommendation, at least two from academic referees
+- GRE general test scores are optional for the current cycle
+- TOEFL or IELTS scores are required unless you completed your bachelor's degree at an English-medium institution
+- Application fee of $90, waived for applicants who qualify for a fee waiver
+- A copy of your passport is required for international applicants only
+- Portfolio of research or projects is optional but recommended
+
+Eligibility
+- A bachelor's degree in computer science or a closely related field is required

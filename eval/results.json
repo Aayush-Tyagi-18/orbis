@@ -1,0 +1,29 @@
+{
+  "extractor": "rules-v1",
+  "documents": 2,
+  "requirements": {
+    "precision": 1.0,
+    "recall": 0.944,
+    "f1": 0.971
+  },
+  "deadlines": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "mandatory_flag_accuracy": 1.0,
+  "condition_detection_accuracy": 0.941,
+  "citation_validity": 1.0,
+  "hallucination_rate": 0.0,
+  "median_latency_s": 0.001,
+  "per_document": {
+    "lakeshore_institute_meng_data.txt": {
+      "req_recall": 0.875,
+      "dl_recall": 1.0
+    },
+    "northfield_university_ms_cs.txt": {
+      "req_recall": 1.0,
+      "dl_recall": 1.0
+    }
+  }
+}

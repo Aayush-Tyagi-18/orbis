@@ -1,0 +1,64 @@
+{
+  "source": "lakeshore_institute_meng_data.txt",
+  "deadlines": [
+    {
+      "due": "2026-12-10",
+      "label_contains": "priority"
+    },
+    {
+      "due": "2027-02-15",
+      "label_contains": "final"
+    }
+  ],
+  "requirements": [
+    {
+      "category": "document",
+      "doc_type": "transcript",
+      "match": "transcripts",
+      "mandatory": true
+    },
+    {
+      "category": "document",
+      "doc_type": "cv",
+      "match": "resume",
+      "mandatory": true
+    },
+    {
+      "category": "essay",
+      "doc_type": "sop",
+      "match": "personal statement",
+      "mandatory": true
+    },
+    {
+      "category": "document",
+      "doc_type": "lor",
+      "match": "recommendation letters",
+      "mandatory": true
+    },
+    {
+      "category": "test_score",
+      "doc_type": "score_report",
+      "match": "gre",
+      "mandatory": false
+    },
+    {
+      "category": "test_score",
+      "doc_type": "english_test",
+      "match": "ielts",
+      "mandatory": true,
+      "has_condition": true
+    },
+    {
+      "category": "fee",
+      "doc_type": null,
+      "match": "application fee",
+      "mandatory": true
+    },
+    {
+      "category": "eligibility",
+      "doc_type": null,
+      "match": "bachelor's degree",
+      "mandatory": true
+    }
+  ]
+}

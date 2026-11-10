@@ -1,0 +1,20 @@
+{
+  "source": "northfield_university_ms_cs.txt",
+  "deadlines": [
+    {"due": "2027-01-05", "label_contains": "round 1"},
+    {"due": "2027-03-01", "label_contains": "round 2"},
+    {"due": "2027-01-15", "label_contains": "financial aid"}
+  ],
+  "requirements": [
+    {"category": "document", "doc_type": "transcript", "match": "transcripts", "mandatory": true},
+    {"category": "document", "doc_type": "cv", "match": "resume", "mandatory": true},
+    {"category": "essay", "doc_type": "sop", "match": "statement of purpose", "mandatory": true},
+    {"category": "document", "doc_type": "lor", "match": "letters of recommendation", "mandatory": true},
+    {"category": "test_score", "doc_type": "score_report", "match": "gre", "mandatory": false},
+    {"category": "test_score", "doc_type": "english_test", "match": "toefl", "mandatory": true, "has_condition": true},
+    {"category": "fee", "doc_type": null, "match": "application fee", "mandatory": true, "has_condition": true},
+    {"category": "document", "doc_type": "passport", "match": "passport", "mandatory": true, "has_condition": true},
+    {"category": "document", "doc_type": "portfolio", "match": "portfolio", "mandatory": false},
+    {"category": "eligibility", "doc_type": null, "match": "bachelor's degree", "mandatory": true}
+  ]
+}

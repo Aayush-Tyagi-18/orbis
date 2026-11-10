@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbis: Your world, intelligently organized</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1224; --bg2:#151d36; --card:#1a2340; --line:#2b3659;
+  --text:#f4f6ff; --muted:#9aa6c9; --a:#5aa0ff; --b:#b49cff; --ok:#3ddc97; --warn:#ffc94d;
+  --grad:linear-gradient(135deg,var(--a),var(--b));
+  --head:'Sora','DM Sans',system-ui,sans-serif; --body:'DM Sans',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:light){
+  :root{--bg:#f3f5ff;--bg2:#e6eaff;--card:#ffffff;--line:#d3d9f2;--text:#141a33;--muted:#56608a;--a:#3b82f6;--b:#8b6cf0}
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.5;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--b);outline-offset:3px;border-radius:8px}
+
+/* top bar */
+.nav{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px clamp(16px,4vw,40px);backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg) 70%,transparent)}
+.brand{display:flex;align-items:center;gap:10px;font:800 1.3rem var(--head);text-decoration:none}
+.brand svg{width:34px;height:34px}
+.nav-actions{display:flex;gap:10px}
+.btn{font:600 .95rem var(--body);padding:10px 18px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--a)}
+.btn.primary{background:var(--grad);border:0;color:#101936}
+.btn.primary:hover{filter:brightness(1.08)}
+
+/* scroll stage */
+.track{height:560vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;overflow:hidden;
+  background:radial-gradient(900px 500px at 50% 40%,var(--bg2),var(--bg))}
+.dots{position:absolute;inset:0;background-image:radial-gradient(circle,var(--muted) 1px,transparent 1.5px);background-size:46px 46px;opacity:.12}
+.word-wrap{position:absolute;inset:0;display:grid;place-items:center;z-index:3;pointer-events:none}
+.word{font:800 clamp(5.5rem,24vw,22rem)/1 var(--head);letter-spacing:-.04em;display:flex;white-space:nowrap}
+.word span{display:inline-block;opacity:0}
+.word span.on{opacity:1}
+.word .o{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.caret{display:inline-block;width:.05em;height:.8em;background:var(--b);margin-left:.04em;align-self:center;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hint{position:absolute;bottom:28px;left:0;right:0;text-align:center;color:var(--muted);font-size:.9rem;z-index:4;transition:opacity .3s}
+.tagline{position:absolute;left:0;right:0;top:calc(50% + clamp(3.5rem,11vw,10rem));text-align:center;color:var(--muted);z-index:4;font-size:clamp(1rem,2vw,1.3rem);transition:opacity .3s}
+
+/* revealed content (seen through the O) */
+.reveal{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:80px clamp(16px,5vw,60px) 40px;text-align:center;opacity:0}
+.reveal h2{font:800 clamp(1.8rem,4.6vw,3.4rem)/1.1 var(--head);letter-spacing:-.02em;max-width:18ch}
+.reveal p.lead{color:var(--muted);max-width:56ch;font-size:clamp(1rem,1.8vw,1.2rem)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;width:min(1020px,100%)}
+.step{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;text-align:left;opacity:0;transform:translateY(24px) scale(.97)}
+.step h3{font:600 1.1rem var(--head);margin-bottom:6px}
+.step p{color:var(--muted);font-size:.95rem}
+.step .tag{display:inline-block;margin-top:12px;font-size:.8rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.step .tag.ok{color:var(--ok);border-color:var(--ok)}
+.step .tag.warn{color:var(--warn);border-color:var(--warn)}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;opacity:0}
+.note{color:var(--muted);font-size:.85rem;max-width:60ch}
+
+/* modal */
+dialog{margin:auto;border:1px solid var(--line);border-radius:24px;background:var(--card);color:var(--text);padding:28px;width:min(420px,calc(100% - 32px))}
+dialog::backdrop{background:rgba(5,8,20,.65);backdrop-filter:blur(4px)}
+.tabs{display:flex;gap:6px;background:var(--bg2);padding:4px;border-radius:14px;margin-bottom:18px}
+.tabs button{flex:1;padding:9px;border:0;border-radius:11px;background:transparent;color:var(--muted);font:600 .95rem var(--body);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--card);color:var(--text);box-shadow:0 1px 0 var(--line)}
+dialog h2{font:800 1.4rem var(--head);margin-bottom:4px}
+dialog .sub{color:var(--muted);font-size:.92rem;margin-bottom:16px}
+label{display:block;font-size:.88rem;font-weight:500;margin:12px 0 5px}
+input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:1rem var(--body)}
+input:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 30%,transparent)}
+.msg{min-height:1.3em;margin-top:12px;font-size:.88rem;color:var(--muted)}
+.msg.err{color:#ff7a8a}
+.row{display:flex;gap:10px;margin-top:16px}
+.row .btn{flex:1;text-align:center}
+.x{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--muted);font-size:1.4rem;cursor:pointer}
+
+@media (max-width:760px){.steps{grid-template-columns:1fr}.reveal{gap:16px;justify-content:flex-start;overflow:auto;padding-top:84px}.btn.ghost-hide{display:none}}
+@media (prefers-reduced-motion:reduce){.caret{animation:none}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="/" aria-label="Orbis home">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="url(#g)" stroke-width="2.4"><ellipse cx="32" cy="32" rx="28" ry="10" transform="rotate(-30 32 32)"/><ellipse cx="32" cy="32" rx="28" ry="10" transform="rotate(30 32 32)"/><ellipse cx="32" cy="32" rx="28" ry="10" transform="rotate(90 32 32)"/></g><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5aa0ff"/><stop offset="1" stop-color="#b49cff"/></linearGradient></defs><circle cx="32" cy="32" r="7" fill="url(#g)"/><circle cx="55" cy="22" r="3" fill="#3ddc97"/><circle cx="12" cy="44" r="3" fill="#ffc94d"/><circle cx="40" cy="8" r="3" fill="#ff6b7d"/></svg>
+    Orbis
+  </a>
+  <div class="nav-actions">
+    <button class="btn" id="openIn">Sign in</button>
+    <button class="btn primary" id="openUp">Sign up</button>
+  </div>
+</header>
+
+<main>
+<section class="track" id="track" aria-label="What Orbis is">
+  <div class="stage" id="stage">
+    <div class="dots"></div>
+
+    <div class="reveal" id="reveal">
+      <h2 id="revealTitle">Paperwork, pulled into orbit.</h2>
+      <p class="lead">Orbis reads a university’s requirements page, lists what it asks for and when it is due, and checks your documents against it. Every item points to the exact line it came from.</p>
+      <div class="steps">
+        <div class="step" data-i="0">
+          <h3>1. It reads</h3>
+          <p>Paste a link, upload a PDF or drop in text. Orbis pulls out requirements and deadlines.</p>
+          <span class="tag">PDF, web page, text</span>
+        </div>
+        <div class="step" data-i="1">
+          <h3>2. It checks itself</h3>
+          <p>Each item must quote the source word for word. If the quote can’t be found, it is flagged, never shown as fact.</p>
+          <span class="tag ok">Quote and page shown</span>
+        </div>
+        <div class="step" data-i="2">
+          <h3>3. It tells you what’s missing</h3>
+          <p>Your documents are matched to the checklist. You see what is done, expired, missing or needs your review.</p>
+          <span class="tag warn">Official site decides</span>
+        </div>
+      </div>
+      <div class="cta-row" id="cta">
+        <a class="btn primary" href="/app">Open Orbis</a>
+        <button class="btn" id="ctaUp">Create an account</button>
+      </div>
+      <p class="note">Orbis explains and organizes. It never submits anything for you, and requirements change every cycle, so confirm on the official page.</p>
+    </div>
+
+    <div class="word-wrap" id="wordWrap">
+      <div class="word" id="word" aria-label="Orbis"></div>
+    </div>
+    <p class="tagline" id="tagline">Your world, intelligently organized.</p>
+    <p class="hint" id="hint">Scroll to fall into the O</p>
+  </div>
+</section>
+</main>
+
+<dialog id="auth" aria-labelledby="authTitle">
+  <button class="x" id="close" aria-label="Close">&times;</button>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabIn" aria-selected="true">Sign in</button>
+    <button role="tab" id="tabUp" aria-selected="false">Sign up</button>
+  </div>
+  <h2 id="authTitle">Welcome back</h2>
+  <p class="sub" id="authSub">Sign in with your email.</p>
+  <form id="form" novalidate>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" minlength="8" required placeholder="At least 8 characters">
+    <p class="msg" id="msg" role="status"></p>
+    <div class="row"><button class="btn primary" id="submit" type="submit">Sign in</button></div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const word = $('word'), stage = $('stage'), track = $('track');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const letters = [...'Orbis'].map((c, i) => {
+    const s = document.createElement('span');
+    s.textContent = c; if (i === 0) s.className = 'o';
+    word.appendChild(s); return s;
+  });
+  const caret = document.createElement('i'); caret.className = 'caret'; word.appendChild(caret);
+  const O = letters[0];
+
+  // typing
+  let typed = 0;
+  function typeNext() {
+    if (typed >= letters.length) return;
+    letters[typed++].classList.add('on');
+    setTimeout(typeNext, reduce ? 0 : 170 + Math.random() * 120);
+  }
+  setTimeout(typeNext, reduce ? 0 : 500);
+
+  // geometry of the O (viewport coords while stage sits at top)
+  let cx = 0, cy = 0;
+  function measure() {
+    word.parentElement.style.transform = 'none';
+    const r = O.getBoundingClientRect();
+    cx = r.left + r.width / 2; cy = r.top + r.height / 2;
+    update();
+  }
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const ease = t => t * t * (3 - 2 * t);
+  const MAXS = 46;
+  const steps = [...document.querySelectorAll('.step')];
+  const reveal = $('reveal'), cta = $('cta');
+
+  function update() {
+    const vw = innerWidth, vh = innerHeight;
+    const p = clamp(scrollY / (track.offsetHeight - vh));
+    const z = ease(clamp((p - 0.04) / 0.46));
+    const s = Math.exp(z * Math.log(MAXS));
+    const w = word.parentElement;
+    w.style.transformOrigin = cx + 'px ' + cy + 'px';
+    w.style.transform = 'translate(' + (vw / 2 - cx) * z + 'px,' + (vh / 2 - cy) * z + 'px) scale(' + s + ')';
+    // letters after O leave first, the O itself fades at the very end
+    letters.slice(1).forEach(l => l.style.opacity = typed > letters.indexOf(l) ? 1 - clamp(z * 4) : 0);
+    caret.style.opacity = 1 - clamp(z * 6);
+    O.style.opacity = typed > 0 ? 1 - clamp((z - 0.92) / 0.08) : 0;
+    $('hint').style.opacity = 1 - clamp(p * 25);
+    $('tagline').style.opacity = 1 - clamp(z * 5);
+    reveal.style.opacity = clamp((z - 0.55) / 0.35);
+    steps.forEach((el, i) => {
+      const t = ease(clamp((p - (0.56 + i * 0.1)) / 0.1));
+      el.style.opacity = t;
+      el.style.transform = 'translateY(' + (1 - t) * 24 + 'px) scale(' + (0.97 + 0.03 * t) + ')';
+    });
+    cta.style.opacity = clamp((p - 0.88) / 0.08);
+    cta.style.pointerEvents = p > 0.9 ? 'auto' : 'none';
+    reveal.style.pointerEvents = z > 0.9 ? 'auto' : 'none';
+  }
+  let raf = 0;
+  addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); }, { passive: true });
+  addEventListener('resize', measure);
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(measure);
+  measure();
+  // letters toggle visibility via class; keep update() in sync while typing
+  const t = setInterval(() => { update(); if (typed >= letters.length) clearInterval(t); }, 60);
+
+  // auth modal
+  const dlg = $('auth'), form = $('form'), msg = $('msg');
+  let mode = 'in';
+  function setMode(m) {
+    mode = m;
+    $('tabIn').setAttribute('aria-selected', m === 'in');
+    $('tabUp').setAttribute('aria-selected', m === 'up');
+    $('authTitle').textContent = m === 'in' ? 'Welcome back' : 'Create your account';
+    $('authSub').textContent = m === 'in' ? 'Sign in with your email.' : 'Use your email to get started.';
+    $('submit').textContent = m === 'in' ? 'Sign in' : 'Create account';
+    $('pw').autocomplete = m === 'in' ? 'current-password' : 'new-password';
+    msg.textContent = ''; msg.className = 'msg';
+  }
+  const open = m => { setMode(m); dlg.showModal(); $('email').focus(); };
+  $('openIn').onclick = () => open('in');
+  $('openUp').onclick = $('ctaUp').onclick = () => open('up');
+  $('tabIn').onclick = () => setMode('in');
+  $('tabUp').onclick = () => setMode('up');
+  $('close').onclick = () => dlg.close();
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = $('email').value.trim(), pw = $('pw').value;
+    const fail = t => { msg.textContent = t; msg.className = 'msg err'; };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail('Enter a valid email address.');
+    if (pw.length < 8) return fail('Password needs at least 8 characters.');
+    msg.className = 'msg'; msg.textContent = 'Working…';
+    try {
+      const r = await fetch('/api/auth/' + (mode === 'in' ? 'login' : 'signup'), {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pw })
+      });
+      if (r.status === 404) {
+        // backend auth not built yet: be honest and continue as a guest
+        msg.textContent = 'Accounts aren’t live yet. Opening Orbis as a guest…';
+        return setTimeout(() => location.href = '/app', 1400);
+      }
+      if (!r.ok) { const j = await r.json().catch(() => ({})); return fail(j.detail || 'Something went wrong. Try again.'); }
+      location.href = '/app';
+    } catch { fail('Can’t reach the server. Check your connection and try again.'); }
+  });
+})();
+</script>
+</body>
+</html>
