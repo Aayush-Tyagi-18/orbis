@@ -9,7 +9,7 @@ from backend.app.main import app
 client = TestClient(app)
 
 
-def test_end_to_end_flow():
+def test_end_to_end_flow(client):
     assert client.get("/api/health").json()["extractor"] == "rules-v1"
     seeded = client.post("/api/demo/seed").json()
     assert len(seeded) == 2
@@ -32,12 +32,18 @@ def test_end_to_end_flow():
     assert task["citation"]["quote"].split()[0] in " ".join(src["pages"])
 
 
-def test_rejects_private_urls_and_empty_input():
+def test_rejects_private_urls_and_empty_input(client):
     assert client.post("/api/programs", json={"name": "x"}).status_code == 422
     assert client.post("/api/programs", json={"name": "x", "url": "http://127.0.0.1:8000/"}).status_code == 400
 
 
-def test_delete_my_data():
+def test_delete_my_data(client):
     client.post("/api/demo/seed")
     client.delete("/api/me")
     assert client.get("/api/programs").json() == []
+
+
+def test_landing_and_app_pages(client):
+    assert "Orbis" in client.get("/").text
+    r = client.get("/app")
+    assert r.status_code == 200 and "Try sample programs" in r.text
