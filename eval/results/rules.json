@@ -1,0 +1,151 @@
+{
+  "extractor": "rules-v1",
+  "generated_at": "2026-11-14T09:38:48+00:00",
+  "documents": 2,
+  "dataset": {
+    "documents": 2,
+    "labelled_items": 23,
+    "min_documents": 10,
+    "min_items": 150,
+    "meets_minimum": false
+  },
+  "requirements": {
+    "precision": 1.0,
+    "recall": 0.944,
+    "f1": 0.971
+  },
+  "deadlines": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "mandatory_flag_accuracy": 1.0,
+  "condition_detection_accuracy": 0.941,
+  "citation_validity": 1.0,
+  "hallucination_rate": 0.0,
+  "median_latency_s": 0.005,
+  "by_category": [
+    {
+      "category": "document",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    {
+      "category": "eligibility",
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.5
+    },
+    {
+      "category": "essay",
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    {
+      "category": "fee",
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    {
+      "category": "test_score",
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    {
+      "category": "deadline",
+      "tp": 5,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    }
+  ],
+  "calibration": {
+    "n": 22,
+    "bins": [
+      {
+        "lo": 0.0,
+        "hi": 0.2,
+        "n": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lo": 0.2,
+        "hi": 0.4,
+        "n": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lo": 0.4,
+        "hi": 0.6,
+        "n": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lo": 0.6,
+        "hi": 0.8,
+        "n": 22,
+        "mean_confidence": 0.711,
+        "accuracy": 1.0
+      },
+      {
+        "lo": 0.8,
+        "hi": 1.0,
+        "n": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      }
+    ],
+    "ece": 0.289
+  },
+  "failures_total": 2,
+  "failures": [
+    {
+      "kind": "missed",
+      "type": "requirement",
+      "category": "eligibility",
+      "text": "Expected something like \"bachelor's degree\"",
+      "source": "lakeshore_institute_meng_data.txt",
+      "quote": null,
+      "confidence": null,
+      "verified": null
+    },
+    {
+      "kind": "wrong_condition",
+      "type": "requirement",
+      "category": "document",
+      "text": "A copy of your passport is required for international applicants only (labelled: has a condition)",
+      "source": "northfield_university_ms_cs.txt",
+      "quote": "A copy of your passport is required for international applicants only",
+      "confidence": 0.7,
+      "verified": true
+    }
+  ],
+  "per_document": {
+    "lakeshore_institute_meng_data.txt": {
+      "req_recall": 0.875,
+      "dl_recall": 1.0
+    },
+    "northfield_university_ms_cs.txt": {
+      "req_recall": 1.0,
+      "dl_recall": 1.0
+    }
+  }
+}

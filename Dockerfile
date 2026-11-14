@@ -4,6 +4,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY backend ./backend
 COPY data ./data
+COPY eval ./eval
 ENV ORBIS_DB=/data/orbis.db
 RUN useradd -m orbis && mkdir /data && chown orbis /data
 USER orbis

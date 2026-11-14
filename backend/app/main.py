@@ -1,6 +1,7 @@
 """Orbis API. Every route is scoped to the signed-in user (see current_user)."""
 from __future__ import annotations
 
+import json
 import re
 from datetime import date
 from pathlib import Path
@@ -19,6 +20,7 @@ from .schema import Deadline, DocType, Program, Requirement, Source, UserDocumen
 from .store import Store
 
 ROOT = Path(__file__).resolve().parents[2]
+EVAL_DIR = ROOT / "eval" / "results"
 STATIC = Path(__file__).parent / "static"
 
 app = FastAPI(title="Orbis", version="0.1.0")
@@ -219,5 +221,15 @@ def landing():
 def app_page():
     return FileResponse(STATIC / "index.html")
 
+
+@app.get("/api/eval")
+def eval_results():
+    runs = {}
+    for p in sorted(EVAL_DIR.glob("*.json")):
+        try:
+            runs[p.stem] = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+    return {"runs": runs}
 
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
